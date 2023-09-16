@@ -1,3 +1,5 @@
+import com.copperleaf.gradle.ConventionConfig
+
 plugins {
     id("copper-leaf-base")
     id("copper-leaf-android-application")
@@ -8,6 +10,49 @@ plugins {
     id("copper-leaf-serialization")
     id("copper-leaf-buildConfig")
 //    id("copper-leaf-resources")
+}
+
+android {
+    namespace = "com.caseyjbrooks.onepagewar"
+
+    signingConfigs {
+        getByName("debug") {
+        }
+        create("release") {
+            val publishConfiguration = ConventionConfig.publishConfig(project)
+            storeFile = file("./../release.keystore")
+            storePassword = publishConfiguration.keystorePassword
+            keyAlias = publishConfiguration.keystoreKeyAlias
+            keyPassword = publishConfiguration.keystoreKeyPassword
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
+        release {
+            // Releases are signed by CI/CD pipelines
+            signingConfig = signingConfigs.getByName("release")
+
+            // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type.
+            isMinifyEnabled = true
+
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
+            isShrinkResources = true
+
+            // Includes the default ProGuard rules files that are packaged with
+            // the Android Gradle plugin. To learn more, go to the section about
+            // R8 configuration files.
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
 }
 
 kotlin {
@@ -43,6 +88,7 @@ kotlin {
 
                 implementation(libs.bundles.ktorClient)
                 implementation(libs.ktor.client.okhttp)
+                implementation("org.slf4j:slf4j-simple:2.0.9")
             }
         }
 
