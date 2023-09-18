@@ -3,7 +3,6 @@ package com.caseyjbrooks.onepagewar.ui.game.views
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -46,14 +45,14 @@ internal fun PlayerSettingsMenu(
                 },
                 leadingIcon = { Icon(Icons.Default.Settings, "Player Details") }
             )
-            DropdownMenuItem(
-                text = { Text("Remove Player") },
-                onClick = {
-                    extraOptionsMenuVisible = false
-                    postInput(GameContract.Inputs.RemovePlayer(focusedPlayer.name))
-                },
-                leadingIcon = { Icon(Icons.Default.RemoveCircle, "Remove Player") }
-            )
+//            DropdownMenuItem(
+//                text = { Text("Remove Player") },
+//                onClick = {
+//                    extraOptionsMenuVisible = false
+//                    postInput(GameContract.Inputs.RemovePlayer(focusedPlayer.name))
+//                },
+//                leadingIcon = { Icon(Icons.Default.RemoveCircle, "Remove Player") }
+//            )
         }
     }
 

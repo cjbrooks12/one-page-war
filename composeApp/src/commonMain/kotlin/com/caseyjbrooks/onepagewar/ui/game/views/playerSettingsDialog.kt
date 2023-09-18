@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.caseyjbrooks.onepagewar.NativeUiUtils
 import com.caseyjbrooks.onepagewar.resources.MR
 import com.caseyjbrooks.onepagewar.vm.game.GameContract
 
@@ -79,15 +80,17 @@ internal fun PlayerSettingsDialog(
                         .toggleable(
                             value = playerIsBot,
                             onValueChange = { playerIsBot = true },
+                            enabled = false,
                         ),
                     leadingContent = {
                         RadioButton(
                             selected = playerIsBot,
-                            onClick = null
+                            onClick = null,
+                            enabled = false,
                         )
                     },
                     headlineContent = {
-                        Text(MR.strings.bot())
+                        Text(MR.strings.bot() + " (coming soon)")
                     }
                 )
 
@@ -95,6 +98,7 @@ internal fun PlayerSettingsDialog(
                     value = playerNameText,
                     onValueChange = { playerNameText = it },
                     label = { Text("Player Name") },
+                    modifier = NativeUiUtils.textFieldModifier(),
                 )
             }
         },

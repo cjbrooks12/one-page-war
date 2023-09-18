@@ -1,6 +1,8 @@
 package com.caseyjbrooks.onepagewar
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import com.copperleaf.ballast.debugger.BallastDebuggerClientConnection
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.StorageSettings
@@ -36,5 +38,18 @@ internal actual object NativeUiUtils {
 
     @Composable
     internal actual fun onBackPressedHandler(onBackPressed: () -> Unit) {
+    }
+
+    internal actual fun textFieldModifier(): Modifier {
+        val virtualKeyboard = window.navigator.asDynamic().virtualKeyboard
+
+        if(virtualKeyboard != null) {
+            return Modifier.onFocusChanged {
+                virtualKeyboard.show()
+                Unit
+            }
+        } else {
+            return Modifier
+        }
     }
 }

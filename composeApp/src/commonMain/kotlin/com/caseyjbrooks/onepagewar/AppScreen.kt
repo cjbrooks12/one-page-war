@@ -8,7 +8,7 @@ internal enum class AppScreen(
     routeFormat: String,
     override val annotations: Set<RouteAnnotation> = emptySet(),
 ) : Route {
-    LogIn("/login"),
+    LogIn("/login?password={?}"),
     PlayGame("/app/game/{themeId}?initialGameId={?}"),
     ;
 

@@ -51,7 +51,6 @@ internal fun PlayerDetails(
                     PlayerSettingsMenu(state, focusedPlayer, postInput)
                 }
             )
-
         }
     }
 }

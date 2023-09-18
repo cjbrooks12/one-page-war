@@ -56,12 +56,13 @@ internal fun GameOverflowDropdownMenu(
                 leadingIcon = { Icon(Icons.Default.RestartAlt, "New Game") }
             )
             DropdownMenuItem(
-                text = { Text("Add Player") },
+                text = { Text("Add Player (coming soon)") },
                 onClick = {
                     newPlayerPopupVisible = true
                     extraOptionsMenuVisible = false
                 },
-                leadingIcon = { Icon(Icons.Default.PersonAdd, "Add Player") }
+                leadingIcon = { Icon(Icons.Default.PersonAdd, "Add Player") },
+                enabled = false
             )
         }
     }

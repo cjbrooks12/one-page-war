@@ -1,13 +1,13 @@
 package com.caseyjbrooks.onepagewar.vm.login
 
+import com.caseyjbrooks.onepagewar.AppScreen
+import com.caseyjbrooks.onepagewar.resources.StringResource
+import com.caseyjbrooks.onepagewar.themes.GameThemes
 import com.copperleaf.ballast.InputHandler
 import com.copperleaf.ballast.InputHandlerScope
 import com.copperleaf.ballast.navigation.routing.build
 import com.copperleaf.ballast.navigation.routing.directions
 import com.copperleaf.ballast.navigation.routing.pathParameter
-import com.caseyjbrooks.onepagewar.AppScreen
-import com.caseyjbrooks.onepagewar.resources.StringResource
-import com.caseyjbrooks.onepagewar.themes.GameThemes
 
 internal class LoginInputHandler(
     private val hardcodedPassword: StringResource,
@@ -22,21 +22,6 @@ internal class LoginInputHandler(
             LoginContract.State>.handleInput(
         input: LoginContract.Inputs
     ): Unit = when (input) {
-        is LoginContract.Inputs.Initialize -> {
-            if (prefs.savedPassword == hardcodedPassword()) {
-                postEvent(
-                    LoginContract.Events.NavigateTo(
-                        AppScreen.PlayGame
-                            .directions()
-                            .pathParameter("themeId", prefs.selectedThemeId ?: GameThemes.defaultTheme.id)
-                            .build()
-                    )
-                )
-            } else {
-                noOp()
-            }
-        }
-
         is LoginContract.Inputs.TryLogin -> {
             if (input.password == hardcodedPassword()) {
                 prefs.savedPassword = input.password

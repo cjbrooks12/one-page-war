@@ -1,6 +1,7 @@
 package com.caseyjbrooks.onepagewar
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.copperleaf.ballast.debugger.BallastDebuggerClientConnection
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.CoroutineScope
@@ -18,4 +19,6 @@ internal expect object NativeUiUtils {
 
     @Composable
     internal fun onBackPressedHandler(onBackPressed: () -> Unit)
+
+    internal fun textFieldModifier(): Modifier
 }

@@ -7,8 +7,8 @@ pluginManagement {
     }
 }
 
-//val conventionDir = "./gradle-convention-plugins"
-val conventionDir = "./../../copperleaf/gradle-convention-plugins"
+val conventionDir = "./gradle-convention-plugins"
+//val conventionDir = "./../../copperleaf/gradle-convention-plugins"
 
 dependencyResolutionManagement {
     versionCatalogs {

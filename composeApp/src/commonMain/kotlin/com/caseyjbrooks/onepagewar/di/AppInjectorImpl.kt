@@ -1,32 +1,10 @@
 package com.caseyjbrooks.onepagewar.di
 
-import com.copperleaf.ballast.BallastViewModelConfiguration
-import com.copperleaf.ballast.build
-import com.copperleaf.ballast.core.BasicViewModel
-import com.copperleaf.ballast.core.BootstrapInterceptor
-import com.copperleaf.ballast.core.FifoInputStrategy
-import com.copperleaf.ballast.core.LoggingInterceptor
-import com.copperleaf.ballast.core.PrintlnLogger
-import com.copperleaf.ballast.debugger.BallastDebuggerClientConnection
-import com.copperleaf.ballast.debugger.BallastDebuggerInterceptor
-import com.copperleaf.ballast.debugger.DebuggerAdapter
-import com.copperleaf.ballast.debugger.JsonDebuggerAdapter
-import com.copperleaf.ballast.debugger.ToStringDebuggerAdapter
-import com.copperleaf.ballast.eventHandler
-import com.copperleaf.ballast.navigation.routing.RoutingTable
-import com.copperleaf.ballast.navigation.routing.fromEnum
-import com.copperleaf.ballast.navigation.vm.Router
-import com.copperleaf.ballast.navigation.vm.withRouter
-import com.copperleaf.ballast.plusAssign
-import com.copperleaf.ballast.savedstate.BallastSavedStateInterceptor
-import com.copperleaf.ballast.undo.BallastUndoInterceptor
-import com.copperleaf.ballast.undo.state.StateBasedUndoController
-import com.copperleaf.ballast.undo.state.withStateBasedUndoController
-import com.copperleaf.ballast.withViewModel
 import com.caseyjbrooks.onepagewar.AppScreen
 import com.caseyjbrooks.onepagewar.NativeUiUtils
 import com.caseyjbrooks.onepagewar.NativeUiUtils.debug
 import com.caseyjbrooks.onepagewar.resources.MR
+import com.caseyjbrooks.onepagewar.themes.GameThemes
 import com.caseyjbrooks.onepagewar.vm.game.GameContract
 import com.caseyjbrooks.onepagewar.vm.game.GameEventHandler
 import com.caseyjbrooks.onepagewar.vm.game.GameInputHandler
@@ -44,6 +22,33 @@ import com.caseyjbrooks.onepagewar.vm.notfound.NotFoundContract
 import com.caseyjbrooks.onepagewar.vm.notfound.NotFoundEventHandler
 import com.caseyjbrooks.onepagewar.vm.notfound.NotFoundInputHandler
 import com.caseyjbrooks.onepagewar.vm.notfound.NotFoundViewModel
+import com.copperleaf.ballast.BallastViewModelConfiguration
+import com.copperleaf.ballast.build
+import com.copperleaf.ballast.core.BasicViewModel
+import com.copperleaf.ballast.core.BootstrapInterceptor
+import com.copperleaf.ballast.core.FifoInputStrategy
+import com.copperleaf.ballast.core.LoggingInterceptor
+import com.copperleaf.ballast.core.PrintlnLogger
+import com.copperleaf.ballast.debugger.BallastDebuggerClientConnection
+import com.copperleaf.ballast.debugger.BallastDebuggerInterceptor
+import com.copperleaf.ballast.debugger.DebuggerAdapter
+import com.copperleaf.ballast.debugger.JsonDebuggerAdapter
+import com.copperleaf.ballast.debugger.ToStringDebuggerAdapter
+import com.copperleaf.ballast.eventHandler
+import com.copperleaf.ballast.navigation.routing.RouterContract
+import com.copperleaf.ballast.navigation.routing.RoutingTable
+import com.copperleaf.ballast.navigation.routing.build
+import com.copperleaf.ballast.navigation.routing.directions
+import com.copperleaf.ballast.navigation.routing.fromEnum
+import com.copperleaf.ballast.navigation.routing.pathParameter
+import com.copperleaf.ballast.navigation.vm.Router
+import com.copperleaf.ballast.navigation.vm.withRouter
+import com.copperleaf.ballast.plusAssign
+import com.copperleaf.ballast.savedstate.BallastSavedStateInterceptor
+import com.copperleaf.ballast.undo.BallastUndoInterceptor
+import com.copperleaf.ballast.undo.state.StateBasedUndoController
+import com.copperleaf.ballast.undo.state.withStateBasedUndoController
+import com.copperleaf.ballast.withViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.filter
@@ -52,6 +57,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 internal class AppInjectorImpl(
     private val applicationCoroutineScope: CoroutineScope,
+    private val initialPassword: String?,
 ) : AppInjector {
     override val router: Router<AppScreen> by lazy {
         BasicViewModel(
@@ -59,7 +65,26 @@ internal class AppInjectorImpl(
                 .commonConfig(
                     logging = true
                 )
-                .withRouter(RoutingTable.fromEnum(AppScreen.entries.toTypedArray()), AppScreen.LogIn)
+                .withRouter(RoutingTable.fromEnum(AppScreen.entries.toTypedArray()), initialRoute = null)
+                .apply {
+                    this += BootstrapInterceptor {
+
+                        val password = MR.strings.hardcodedPassword()
+                        val matchesUrlPassword = password == initialPassword
+                        val matchesSavedPassword = password == loginPrefs.savedPassword
+
+                        val initialRoute = if (matchesUrlPassword || matchesSavedPassword) {
+                            AppScreen.PlayGame
+                                .directions()
+                                .pathParameter("themeId", loginPrefs.selectedThemeId ?: GameThemes.defaultTheme.id)
+                                .build()
+                        } else {
+                            AppScreen.LogIn.directions().build()
+                        }
+
+                        RouterContract.Inputs.GoToDestination(initialRoute)
+                    }
+                }
                 .commonTypedConfig(
                     debugging = true
                 )
@@ -104,7 +129,10 @@ internal class AppInjectorImpl(
         )
     }
 
-    override fun loginViewModel(coroutineScope: CoroutineScope): LoginViewModel {
+    override fun loginViewModel(
+        coroutineScope: CoroutineScope,
+        urlPassword: String?,
+    ): LoginViewModel {
         return BasicViewModel(
             coroutineScope = coroutineScope,
             config = BallastViewModelConfiguration.Builder()
@@ -122,11 +150,6 @@ internal class AppInjectorImpl(
                 .commonTypedConfig(
                     debugging = true,
                 )
-                .apply {
-                    this += BootstrapInterceptor {
-                        LoginContract.Inputs.Initialize
-                    }
-                }
                 .build(),
             eventHandler = LoginEventHandler(router),
         )

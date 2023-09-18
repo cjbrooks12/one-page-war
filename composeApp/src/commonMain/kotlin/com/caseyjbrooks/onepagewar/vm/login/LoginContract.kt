@@ -13,8 +13,6 @@ internal object LoginContract {
     @Serializable
     internal sealed interface Inputs {
         @Serializable
-        data object Initialize : Inputs
-        @Serializable
         data class TryLogin(val password: String) : Inputs
     }
 

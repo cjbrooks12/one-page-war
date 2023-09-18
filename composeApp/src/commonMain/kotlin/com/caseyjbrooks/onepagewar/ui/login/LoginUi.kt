@@ -20,15 +20,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.caseyjbrooks.onepagewar.NativeUiUtils
 import com.caseyjbrooks.onepagewar.ui.LocalInjector
 import com.caseyjbrooks.onepagewar.vm.login.LoginContract
 
 internal object LoginUi {
     @Composable
-    internal fun Screen() {
+    internal fun Screen(urlPassword: String?) {
         val injector = LocalInjector.current
         val coroutineScope = rememberCoroutineScope()
-        val vm = remember(coroutineScope) { injector.loginViewModel(coroutineScope) }
+        val vm = remember(coroutineScope) { injector.loginViewModel(coroutineScope, urlPassword) }
 
         val state by vm.observeStates().collectAsState()
         Screen(state, vm::trySend)
@@ -53,6 +54,7 @@ internal object LoginUi {
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Enter password") },
+                    modifier = NativeUiUtils.textFieldModifier(),
                 )
 
                 Button(

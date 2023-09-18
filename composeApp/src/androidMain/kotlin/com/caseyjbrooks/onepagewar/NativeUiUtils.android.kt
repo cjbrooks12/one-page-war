@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.copperleaf.ballast.debugger.BallastDebuggerClientConnection
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
@@ -45,4 +46,7 @@ internal actual object NativeUiUtils {
         BackHandler { onBackPressed() }
     }
 
+    internal actual fun textFieldModifier(): Modifier {
+        return Modifier
+    }
 }

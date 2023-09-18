@@ -19,8 +19,8 @@ public object GameContract {
         val currentMove: CurrentMove? = null,
 
         val players: List<Player> = listOf(
-            Player("Human", bot = false),
-            Player("Bot", bot = true),
+            Player("Player 1", bot = false),
+            Player("Player 2", bot = false),
         ),
         val arenaData: Map<String, ArenaData> = emptyMap(),
     ) {

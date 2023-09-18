@@ -1,14 +1,8 @@
 package com.caseyjbrooks.onepagewar.ui.game.views
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -16,11 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
-import com.caseyjbrooks.onepagewar.resources.MR
-import com.caseyjbrooks.onepagewar.themes.GameThemes
+import com.caseyjbrooks.onepagewar.NativeUiUtils
 import com.caseyjbrooks.onepagewar.vm.game.GameContract
 import com.caseyjbrooks.onepagewar.vm.game.models.Theme
 
@@ -44,40 +35,16 @@ internal fun GameSettingsDialog(
         },
         onDismissRequest = onDismissRequest,
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                for (theme in GameThemes.allAvailableThemes) {
-                    val themeIsSelected = theme.id == themeId
-                    ListItem(
-                        modifier = Modifier
-                            .width(280.dp)
-                            .toggleable(
-                                enabled = theme.enabled,
-                                value = themeIsSelected,
-                                onValueChange = { themeId = theme.id },
-                            ),
-                        leadingContent = {
-                            RadioButton(
-                                enabled = theme.enabled,
-                                selected = themeIsSelected,
-                                onClick = null
-                            )
-                        },
-                        headlineContent = {
-                            if (theme.enabled) {
-                                Text(theme.name())
-                            } else {
-                                Text("${theme.name()} (${MR.strings.coming_soon()})")
-                            }
-                        }
-                    )
-                }
-
-                TextField(
-                    value = gameIdText,
-                    onValueChange = { gameIdText = it },
-                    label = { Text("Game ID") },
-                )
-            }
+            ThemeSelctor(
+                currentThemeId = themeId,
+                setThemeId = { themeId = it },
+            )
+            TextField(
+                value = gameIdText,
+                onValueChange = { gameIdText = it },
+                label = { Text("Game ID") },
+                modifier = NativeUiUtils.textFieldModifier(),
+            )
         },
         confirmButton = {
             Button(
