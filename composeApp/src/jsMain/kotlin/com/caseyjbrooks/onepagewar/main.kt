@@ -5,8 +5,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -52,11 +53,11 @@ public fun main() {
                 contentAlignment = Alignment.TopCenter,
             ) {
                 if(this.maxWidth <= 480.dp) {
-                    RouterUi.App(AppInjectorImpl(scope, urlParams.get("password")))
+                    Text("One Page War is not yet supported on mobile browsers. Please visit this webpage on a Desktop browser instead.")
                 } else {
                     Box(
                         modifier = Modifier
-                            .requiredWidth(480.dp)
+                            .requiredSize(480.dp, 960.dp)
                             .background(MaterialTheme.colorScheme.surface)
                             .border(width = Dp.Hairline, color = MaterialTheme.colorScheme.onSurface)
                     ) {
