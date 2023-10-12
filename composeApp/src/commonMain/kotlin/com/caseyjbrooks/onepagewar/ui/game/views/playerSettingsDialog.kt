@@ -80,17 +80,15 @@ internal fun PlayerSettingsDialog(
                         .toggleable(
                             value = playerIsBot,
                             onValueChange = { playerIsBot = true },
-                            enabled = false,
                         ),
                     leadingContent = {
                         RadioButton(
                             selected = playerIsBot,
                             onClick = null,
-                            enabled = false,
                         )
                     },
                     headlineContent = {
-                        Text(MR.strings.bot() + " (coming soon)")
+                        Text(MR.strings.bot())
                     }
                 )
 

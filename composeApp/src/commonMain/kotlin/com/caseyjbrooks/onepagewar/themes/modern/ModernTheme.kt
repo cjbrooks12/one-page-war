@@ -1,15 +1,29 @@
 package com.caseyjbrooks.onepagewar.themes.modern
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import com.caseyjbrooks.onepagewar.resources.MR
+import com.caseyjbrooks.onepagewar.themes.GameThemes.EMPTY_VALUE
+import com.caseyjbrooks.onepagewar.themes.GameThemes.REMOVE_VALUE
+import com.caseyjbrooks.onepagewar.themes.GameThemes.WILD_VALUE
 import com.caseyjbrooks.onepagewar.vm.game.models.Arena
 import com.caseyjbrooks.onepagewar.vm.game.models.Theme
 
-internal val ModernGameTheme = Theme(
+public object ModernTheme : Theme(
     id = "modern",
     name = MR.strings.modern_name,
     enabled = true,
     specialMark = "S",
+    powerShape = RectangleShape,
+    handValues = MR.strings.modern_hand_values,
+    playerDiceValues = listOf(
+        1, 2, 3, 4, 5,
+        6, 7, 8, 9, REMOVE_VALUE,
+    ),
+    botDiceValues = listOf(
+        1, 2, 3, 4, 5,
+        6, 7, WILD_VALUE, EMPTY_VALUE, REMOVE_VALUE,
+    ),
     arenas = listOf(
         Arena(
             id = "land",

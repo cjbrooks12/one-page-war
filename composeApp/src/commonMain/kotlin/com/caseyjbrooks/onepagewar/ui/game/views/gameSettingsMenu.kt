@@ -28,6 +28,7 @@ internal fun GameOverflowDropdownMenu(
     var extraOptionsMenuVisible by remember { mutableStateOf(false) }
     var gameIdPopupVisible by remember { mutableStateOf(false) }
     var newPlayerPopupVisible by remember { mutableStateOf(false) }
+    var themeInfoPopupVisible by remember { mutableStateOf(false) }
 
     Box {
         IconButton(
@@ -44,6 +45,7 @@ internal fun GameOverflowDropdownMenu(
                 onClick = {
                     gameIdPopupVisible = true
                     extraOptionsMenuVisible = false
+                    themeInfoPopupVisible = false
                 },
                 leadingIcon = { Icon(Icons.Default.Info, "Game Info") }
             )
@@ -52,6 +54,7 @@ internal fun GameOverflowDropdownMenu(
                 onClick = {
                     postInput(GameContract.Inputs.NewGame)
                     extraOptionsMenuVisible = false
+                    themeInfoPopupVisible = false
                 },
                 leadingIcon = { Icon(Icons.Default.RestartAlt, "New Game") }
             )
@@ -60,9 +63,18 @@ internal fun GameOverflowDropdownMenu(
                 onClick = {
                     newPlayerPopupVisible = true
                     extraOptionsMenuVisible = false
+                    themeInfoPopupVisible = false
                 },
                 leadingIcon = { Icon(Icons.Default.PersonAdd, "Add Player") },
-                enabled = false
+            )
+            DropdownMenuItem(
+                text = { Text("Theme Info") },
+                onClick = {
+                    newPlayerPopupVisible = false
+                    extraOptionsMenuVisible = false
+                    themeInfoPopupVisible = true
+                },
+                leadingIcon = { Icon(Icons.Default.Info, "Theme Info") },
             )
         }
     }
@@ -92,6 +104,15 @@ internal fun GameOverflowDropdownMenu(
                 postInput(GameContract.Inputs.AddPlayer(name, bot))
             },
             newPlayerPopup = true,
+        )
+    }
+
+    if (themeInfoPopupVisible) {
+        ThemeInfoDialog(
+            selectedTheme = selectedTheme,
+            onDismissRequest = {
+                themeInfoPopupVisible = false
+            },
         )
     }
 }

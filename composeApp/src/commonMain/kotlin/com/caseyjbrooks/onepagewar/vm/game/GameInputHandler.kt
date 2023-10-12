@@ -171,9 +171,9 @@ internal class GameInputHandler(
 
             if (player.bot) {
                 // for bots, a 0 represents a starred value
-                check(input.value == null || input.value in 0..7) { "Bot value must be 0-7!" }
+                check(input.value in theme.botDiceValues) { "Bot value must be ${theme.botDiceValues}!" }
             } else {
-                check(input.value == null || input.value in 1..9) { "Human dice value must be 1-9!" }
+                check(input.value in theme.playerDiceValues) { "Human value must be ${theme.botDiceValues}!" }
             }
 
             updateState { state ->

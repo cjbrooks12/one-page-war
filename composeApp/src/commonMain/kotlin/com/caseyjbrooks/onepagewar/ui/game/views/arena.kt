@@ -41,6 +41,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import com.caseyjbrooks.onepagewar.themes.GameThemes.EMPTY_VALUE
+import com.caseyjbrooks.onepagewar.themes.GameThemes.REMOVE_VALUE
+import com.caseyjbrooks.onepagewar.themes.GameThemes.WILD_VALUE
 import com.caseyjbrooks.onepagewar.ui.VerticalDivider
 import com.caseyjbrooks.onepagewar.ui.calculatedContentColor
 import com.caseyjbrooks.onepagewar.vm.game.GameContract
@@ -170,6 +173,7 @@ private fun ArenaView(
 
             for (i in 1..arena.numberOfValues) {
                 ArenaValue(
+                    selectedTheme = selectedTheme,
                     arena = arena,
                     focusedPlayer = focusedPlayer,
                     valueIndex = i,
@@ -216,6 +220,7 @@ private fun ArenaView(
             ) {
                 for (i in 1..arena.numberOfPowerUses) {
                     ArenaUse(
+                        selectedTheme = selectedTheme,
                         arena = arena,
                         used = powerUses.getOrElse(i - 1) { false },
                         onValueChanged = {
@@ -239,6 +244,7 @@ private fun ArenaView(
 
 @Composable
 private fun ArenaValue(
+    selectedTheme: Theme,
     arena: Arena,
     focusedPlayer: Player,
     valueIndex: Int,
@@ -259,16 +265,23 @@ private fun ArenaValue(
             },
         contentAlignment = Alignment.Center
     ) {
-        if (value != null) {
-            if (focusedPlayer.bot && value == 0) {
+        when (value) {
+            null, EMPTY_VALUE -> {
+
+            }
+
+            WILD_VALUE -> {
                 Icon(Icons.Default.Star, "Wild Value")
-            } else {
+            }
+
+            else -> {
                 Text("$value", color = arena.color.calculatedContentColor)
             }
         }
 
         if (focusedTooltipArena == arena && focusedTooltipIndex == valueIndex) {
             ArenaTooltip(
+                selectedTheme = selectedTheme,
                 arena = arena,
                 focusedPlayer = focusedPlayer,
                 onDismissRequest = {
@@ -285,6 +298,7 @@ private fun ArenaValue(
 
 @Composable
 private fun ArenaTooltip(
+    selectedTheme: Theme,
     arena: Arena,
     focusedPlayer: Player,
 
@@ -296,93 +310,32 @@ private fun ArenaTooltip(
         offset = IntOffset(0, 48),
         onDismissRequest = onDismissRequest,
     ) {
+        val rows = if (focusedPlayer.bot) {
+            selectedTheme.botDiceValues.chunked(5)
+        } else {
+            selectedTheme.playerDiceValues.chunked(5)
+        }
+
+        val height = 48.dp * rows.size
+
         Card(
             modifier = Modifier
-                .requiredSize(width = 48.dp * 5, height = 48.dp * 2),
+                .requiredSize(width = 48.dp * 5, height = height),
             border = BorderStroke(width = Dp.Hairline, color = arena.color.calculatedContentColor),
             content = {
                 Column(
                     Modifier
-                        .requiredSize(width = 48.dp * 5, height = 48.dp * 2),
+                        .requiredSize(width = 48.dp * 5, height),
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .requiredSize(width = 48.dp * 5, height = 48.dp),
-                    ) {
-                        val firstRowValues = 1..5
-                        firstRowValues.forEach { index ->
-                            Box(
-                                Modifier
-                                    .size(48.dp)
-                                    .background(arena.color)
-                                    .clickable {
-                                        onValueChanged(index)
-                                    },
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text("${index}", color = arena.color.calculatedContentColor)
-                            }
-                            if (index != firstRowValues.last) {
-                                VerticalDivider(
-                                    color = arena.color.calculatedContentColor
-                                )
-                            }
-                        }
-                    }
-                    Divider(color = arena.color.calculatedContentColor)
-                    Row(
-                        modifier = Modifier
-                            .requiredSize(width = 48.dp * 5, height = 48.dp),
-                    ) {
-                        val secondRowValues = if (focusedPlayer.bot) {
-                            listOf(6, 7, -1, 0, null)
-                        } else {
-                            listOf(6, 7, 8, 9, null)
-                        }
-
-                        secondRowValues.forEach { index ->
-                            Box(
-                                Modifier
-                                    .size(48.dp)
-                                    .background(arena.color)
-                                    .clickable {
-                                        onValueChanged(index)
-                                    },
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                when (index) {
-                                    null -> {
-                                        // remove value button
-                                        Icon(
-                                            Icons.Default.RemoveCircle,
-                                            "Clear Value",
-                                            tint = arena.color.calculatedContentColor
-                                        )
-                                    }
-
-                                    -1 -> {
-                                        // no value displayed
-                                    }
-
-                                    0 -> {
-                                        // bot's Star ability
-                                        Icon(
-                                            Icons.Default.Star,
-                                            "Wild Value",
-                                            tint = arena.color.calculatedContentColor
-                                        )
-                                    }
-
-                                    else -> {
-                                        Text("${index}", color = arena.color.calculatedContentColor)
-                                    }
-                                }
-                            }
-                            if (index != secondRowValues.last()) {
-                                VerticalDivider(
-                                    color = arena.color.calculatedContentColor
-                                )
-                            }
+                    rows.forEachIndexed { rowIndex, rowValues ->
+                        ArenaTooltipRow(
+                            selectedTheme = selectedTheme,
+                            arena = arena,
+                            rowValues = rowValues,
+                            onValueChanged = onValueChanged,
+                        )
+                        if (rowIndex != rows.size) {
+                            Divider(color = arena.color.calculatedContentColor)
                         }
                     }
                 }
@@ -391,9 +344,86 @@ private fun ArenaTooltip(
     }
 }
 
+@Composable
+private fun ArenaTooltipRow(
+    selectedTheme: Theme,
+    arena: Arena,
+
+    rowValues: List<Int?>,
+
+    onValueChanged: (Int?) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .requiredSize(width = 48.dp * 5, height = 48.dp),
+    ) {
+        rowValues.forEachIndexed { columnIndex, columnValue ->
+            ArenaTooltipColumn(
+                selectedTheme = selectedTheme,
+                arena = arena,
+                columnValue = columnValue,
+                onValueChanged = onValueChanged,
+            )
+            if (columnIndex != rowValues.size) {
+                VerticalDivider(
+                    color = arena.color.calculatedContentColor
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ArenaTooltipColumn(
+    selectedTheme: Theme,
+    arena: Arena,
+
+    columnValue: Int?,
+
+    onValueChanged: (Int?) -> Unit,
+) {
+    Box(
+        Modifier
+            .size(48.dp)
+            .background(arena.color)
+            .clickable {
+                onValueChanged(columnValue)
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        when (columnValue) {
+            WILD_VALUE -> {
+                Icon(
+                    Icons.Default.Star,
+                    "Wild Value",
+                    tint = arena.color.calculatedContentColor
+                )
+            }
+
+            EMPTY_VALUE -> {
+                // no value displayed
+            }
+
+            REMOVE_VALUE -> {
+                // remove value button
+                Icon(
+                    Icons.Default.RemoveCircle,
+                    "Clear Value",
+                    tint = arena.color.calculatedContentColor
+                )
+            }
+
+            else -> {
+                Text("$columnValue", color = arena.color.calculatedContentColor)
+            }
+        }
+    }
+}
+
 @Suppress("UNUSED_PARAMETER")
 @Composable
 private fun ArenaUse(
+    selectedTheme: Theme,
     arena: Arena,
     used: Boolean,
     onValueChanged: (Boolean) -> Unit,
@@ -401,6 +431,7 @@ private fun ArenaUse(
     Box(
         Modifier
             .size(36.dp)
+            .clip(selectedTheme.powerShape)
             .background(Color.White)
             .clickable { onValueChanged(!used) },
         contentAlignment = Alignment.Center

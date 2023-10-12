@@ -61,7 +61,7 @@ public fun main() {
                             .background(MaterialTheme.colorScheme.surface)
                             .border(width = Dp.Hairline, color = MaterialTheme.colorScheme.onSurface)
                     ) {
-                        RouterUi.App(AppInjectorImpl(scope, urlParams.get("password")))
+                        RouterUi.App(AppInjectorImpl(scope, "CopperLeaf"))
                     }
                 }
             }

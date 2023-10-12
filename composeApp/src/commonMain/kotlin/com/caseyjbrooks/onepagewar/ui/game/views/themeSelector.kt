@@ -15,7 +15,7 @@ import com.caseyjbrooks.onepagewar.themes.GameThemes
 
 
 @Composable
-internal fun ThemeSelctor(
+internal fun ThemeSelector(
     currentThemeId: String,
     setThemeId: (String) -> Unit,
 ) {

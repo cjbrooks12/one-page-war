@@ -1,5 +1,6 @@
 package com.caseyjbrooks.onepagewar.ui.game.views
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
@@ -35,16 +36,18 @@ internal fun GameSettingsDialog(
         },
         onDismissRequest = onDismissRequest,
         text = {
-            ThemeSelctor(
-                currentThemeId = themeId,
-                setThemeId = { themeId = it },
-            )
-            TextField(
-                value = gameIdText,
-                onValueChange = { gameIdText = it },
-                label = { Text("Game ID") },
-                modifier = NativeUiUtils.textFieldModifier(),
-            )
+            Column {
+                TextField(
+                    value = gameIdText,
+                    onValueChange = { gameIdText = it },
+                    label = { Text("Game ID") },
+                    modifier = NativeUiUtils.textFieldModifier(),
+                )
+                ThemeSelector(
+                    currentThemeId = themeId,
+                    setThemeId = { themeId = it },
+                )
+            }
         },
         confirmButton = {
             Button(
